@@ -1,25 +1,25 @@
-const express = require('express')
+const express = require('express');
 const app = express();
 require('dotenv').config();
-const main =  require('./config/db')
-const cookieParser =  require('cookie-parser');
+const main = require('./config/db');
+const cookieParser = require('cookie-parser');
 const authRouter = require("./routes/userAuth");
 const redisClient = require('./config/redis');
 const problemRouter = require("./routes/problemCreator");
-const submitRouter = require("./routes/submit")
-const aiRouter = require("./routes/aiChatting")
+const submitRouter = require("./routes/submit");
+const aiRouter = require("./routes/aiChatting");
 const videoRouter = require("./routes/videoCreator");
-const cors = require('cors')
+const cors = require('cors');
 
-// console.log("Hello")
-
+// ✅ Must be placed before any `app.use(...)` routes
 const allowedOrigins = [
   'http://localhost:5173',
-  'https://leetcode-clone-utkarsh.netlify.app'
+  'https://leetcode-clone-front.netlify.app'
 ];
 
 app.use(cors({
   origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl)
     if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
@@ -29,34 +29,31 @@ app.use(cors({
   credentials: true
 }));
 
-
+// ✅ These should come after CORS
 app.use(express.json());
 app.use(cookieParser());
 
-app.use('/user',authRouter);
-app.use('/problem',problemRouter);
-app.use('/submission',submitRouter);
-app.use('/ai',aiRouter);
-app.use("/video",videoRouter);
+// Routes
+app.use('/user', authRouter);
+app.use('/problem', problemRouter);
+app.use('/submission', submitRouter);
+app.use('/ai', aiRouter);
+app.use("/video", videoRouter);
 
-
-const InitalizeConnection = async ()=>{
-    try{
-
-        await Promise.all([main(),redisClient.connect()]);
-        console.log("DB Connected");
-        const PORT = process.env.PORT || 3000;
-
-app.listen(PORT, () => {
-  console.log("Server listening at port number: " + PORT);
-});
-
-    }
-    catch(err){
-        console.log("Error: "+err);
-    }
-}
-
+// Start server
+const InitalizeConnection = async () => {
+  try {
+    await Promise.all([main(), redisClient.connect()]);
+    console.log("DB Connected");
+    const PORT = process.env.PORT || 3000;
+    app.listen(PORT, () => {
+      console.log("Server listening at port number: " + PORT);
+    });
+  } catch (err) {
+    console.log("Error: " + err);
+  }
+};
 
 InitalizeConnection();
+
 
