@@ -9,6 +9,7 @@ const Submission = require("../models/submission")
 const register = async (req,res)=>{
     
     try{
+        console.log("REGISTER REQ BODY:", req.body); 
         // validate the data;
 
       validate(req.body); 
@@ -34,6 +35,8 @@ const register = async (req,res)=>{
     })
     }
     catch(err){
+
+         console.error("REGISTER ERROR:", err);
         res.status(400).send("Error: "+err);
     }
 }
