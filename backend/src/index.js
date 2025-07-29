@@ -14,7 +14,7 @@ const cors = require('cors');
 // ✅ Must be placed before any `app.use(...)` routes
 const allowedOrigins = [
   'http://localhost:5173',
-  'https://leetcode-clone-front.netlify.app'
+  'https://leetcode-clone-front.netlify.app/'
 ];
 
 app.use(cors({
