@@ -1,14 +1,15 @@
-import axios from "axios"
+import axios from "axios";
 
 const axiosClient = axios.create({
   baseURL: import.meta.env.MODE === "development"
     ? "http://localhost:3000"
-    : "https://leetcode-clone1.onrender.com",  // your render backend URL here
-  withCredentials: true,
-  headers: { 'Content-Type': 'application/json' }
+    : "https://leetcode-clone1.onrender.com",
+  withCredentials: true, // ✅ this is crucial for cookies (token)
+  headers: {
+    'Content-Type': 'application/json'
+  }
 });
 
-
-export default axiosClient; 
+export default axiosClient;
 
 
