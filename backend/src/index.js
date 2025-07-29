@@ -13,13 +13,12 @@ const cors = require('cors');
 
 // ✅ Must be placed before any `app.use(...)` routes
 const allowedOrigins = [
-  'http://localhost:5173',
-  'https://leetcode-clone-front.netlify.app/'
+  'http://localhost:5173',                    // local dev frontend
+  'https://leetcode-frontend.netlify.app'    // your Netlify frontend URL (check spelling carefully)
 ];
 
 app.use(cors({
   origin: function (origin, callback) {
-    // Allow requests with no origin (like mobile apps or curl)
     if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
