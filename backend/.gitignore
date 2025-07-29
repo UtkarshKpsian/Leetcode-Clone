@@ -1,7 +1,14 @@
 # Ignore environment variables
 .env
 
-# Optional: ignore node_modules and logs
+# Ignore node modules
 node_modules/
+
+# Ignore log files
 *.log
 logs/
+
+# Ignore build folders if any
+dist/
+build/
+
