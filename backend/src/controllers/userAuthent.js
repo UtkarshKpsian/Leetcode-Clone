@@ -6,40 +6,55 @@ const jwt = require('jsonwebtoken');
 const Submission = require("../models/submission")
 
 
-const register = async (req,res)=>{
-    
-    try{
-        console.log("REGISTER REQ BODY:", req.body); 
-        // validate the data;
+const register = async (req, res) => {
+  try {
+    console.log("REGISTER REQ BODY:", req.body);
 
-      validate(req.body); 
-      const {firstName, emailId, password}  = req.body;
+    // Validate the data
+    validate(req.body);
+    const { firstName, emailId, password } = req.body;
 
-      req.body.password = await bcrypt.hash(password, 10);
-      req.body.role = 'user'
-    //
-    
-     const user =  await User.create(req.body);
-     const token =  jwt.sign({_id:user._id , emailId:emailId, role:'user'},process.env.JWT_KEY,{expiresIn: 60*60});
-     const reply = {
-        firstName: user.firstName,
-        emailId: user.emailId,
-        _id: user._id,
-        role:user.role,
-    }
-    
-     res.cookie('token',token,{maxAge: 60*60*1000});
-     res.status(201).json({
-        user:reply,
-        message:"Loggin Successfully"
-    })
-    }
-    catch(err){
+    // Hash password and assign role
+    req.body.password = await bcrypt.hash(password, 10);
+    req.body.role = 'user';
 
-         console.error("REGISTER ERROR:", err);
-        res.status(400).send("Error: "+err);
+    // Create user
+    const user = await User.create(req.body);
+
+    // Generate JWT token
+    const token = jwt.sign(
+      { _id: user._id, emailId: emailId, role: 'user' },
+      process.env.JWT_KEY,
+      { expiresIn: 60 * 60 }
+    );
+
+    // Prepare response
+    const reply = {
+      firstName: user.firstName,
+      emailId: user.emailId,
+      _id: user._id,
+      role: user.role,
+    };
+
+    // Set cookie and return success
+    res.cookie('token', token, { maxAge: 60 * 60 * 1000 });
+    res.status(201).json({
+      user: reply,
+      message: "Registered Successfully"
+    });
+
+  } catch (err) {
+    // Catch duplicate email error
+    if (err.code === 11000 && err.keyPattern && err.keyPattern.emailId) {
+      return res.status(400).json({ message: "Email already registered" });
     }
-}
+
+    // Log and return generic error
+    console.error("REGISTER ERROR:", err);
+    res.status(400).json({ message: "Registration failed", error: err.message });
+  }
+};
+
 
 
 const login = async (req,res)=>{
